@@ -5,27 +5,6 @@
     "title": "Face Client",
     "description": "An API for face detection, verification, and identification."
   },
-  "securityDefinitions": {
-    "apim_key": {
-      "type": "apiKey",
-      "name": "Ocp-Apim-Subscription-Key",
-      "in": "header"
-    }
-  },
-  "security": [
-    {
-      "apim_key": []
-    }
-  ],
-  "x-ms-parameterized-host": {
-    "hostTemplate": "{Endpoint}/face/v1.0",
-    "useSchemePrefix": false,
-    "parameters": [
-      {
-        "$ref": "#/parameters/Endpoint"
-      }
-    ]
-  },
   "paths": {
     "/findsimilars": {
       "post": {
@@ -2666,351 +2645,6 @@
       }
     }
   },
-  "x-ms-paths": {
-    "/verify?overload=person": {
-      "post": {
-        "description": "Verify whether two faces belong to a same person. Compares a face Id with a Person Id",
-        "operationId": "Face_VerifyFaceToPerson",
-        "parameters": [
-          {
-            "name": "body",
-            "description": "Request body for face to person verification.",
-            "in": "body",
-            "required": true,
-            "x-ms-client-flatten": true,
-            "schema": {
-              "$ref": "#/definitions/VerifyFaceToPersonRequest"
-            }
-          }
-        ],
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful call returns the verification result.",
-            "schema": {
-              "$ref": "#/definitions/VerifyResult"
-            }
-          },
-          "default": {
-            "description": "Error response.",
-            "schema": {
-              "$ref": "#/definitions/APIError"
-            }
-          }
-        },
-        "x-ms-examples": {
-          "Verify face to person example": {
-            "$ref": "./examples/VerifyFaceToPerson.json"
-          }
-        }
-      }
-    },
-    "/detect?overload=stream": {
-      "post": {
-        "description": "Detect human faces in an image, return face rectangles, and optionally with faceIds, landmarks, and attributes.<br />\n* No image will be stored. Only the extracted face feature will be stored on server. The faceId is an identifier of the face feature and will be used in [Face - Identify](https://docs.microsoft.com/rest/api/cognitiveservices/face/face/identify), [Face - Verify](https://docs.microsoft.com/rest/api/cognitiveservices/face/face/verifyfacetoface), and [Face - Find Similar](https://docs.microsoft.com/rest/api/cognitiveservices/face/face/findsimilar). The stored face feature(s) will expire and be deleted 24 hours after the original detection call.\n* Optional parameters include faceId, landmarks, and attributes. Attributes include age, gender, headPose, smile, facialHair, glasses, emotion, hair, makeup, occlusion, accessories, blur, exposure and noise. Some of the results returned for specific attributes may not be highly accurate.\n* JPEG, PNG, GIF (the first frame), and BMP format are supported. The allowed image file size is from 1KB to 6MB.\n* Up to 100 faces can be returned for an image. Faces are ranked by face rectangle size from large to small.\n* For optimal results when querying [Face - Identify](https://docs.microsoft.com/rest/api/cognitiveservices/face/face/identify), [Face - Verify](https://docs.microsoft.com/rest/api/cognitiveservices/face/face/verifyfacetoface), and [Face - Find Similar](https://docs.microsoft.com/rest/api/cognitiveservices/face/face/findsimilar) ('returnFaceId' is true), please use faces that are: frontal, clear, and with a minimum size of 200x200 pixels (100 pixels between eyes).\n* The minimum detectable face size is 36x36 pixels in an image no larger than 1920x1080 pixels. Images with dimensions higher than 1920x1080 pixels will need a proportionally larger minimum face size.\n* Different 'detectionModel' values can be provided. To use and compare different detection models, please refer to [How to specify a detection model](https://docs.microsoft.com/azure/cognitive-services/face/face-api-how-to-topics/specify-detection-model)\n  | Model | Recommended use-case(s) |\n  | ---------- | -------- |\n  | 'detection_01': | The default detection model for [Face - Detect](https://docs.microsoft.com/rest/api/cognitiveservices/face/face/detectwithurl). Recommend for near frontal face detection. For scenarios with exceptionally large angle (head-pose) faces, occluded faces or wrong image orientation, the faces in such cases may not be detected. |\n  | 'detection_02': | Detection model released in 2019 May with improved accuracy especially on small, side and blurry faces. |\n\n* Different 'recognitionModel' values are provided. If follow-up operations like Verify, Identify, Find Similar are needed, please specify the recognition model with 'recognitionModel' parameter. The default value for 'recognitionModel' is 'recognition_01', if latest model needed, please explicitly specify the model you need in this parameter. Once specified, the detected faceIds will be associated with the specified recognition model. More details, please refer to [How to specify a recognition model](https://docs.microsoft.com/azure/cognitive-services/face/face-api-how-to-topics/specify-recognition-model)\n  | Model | Recommended use-case(s) |\n  | ---------- | -------- |\n  | 'recognition_01': | The default recognition model for [Face - Detect](https://docs.microsoft.com/rest/api/cognitiveservices/face/face/detectwithurl). All those faceIds created before 2019 March are bonded with this recognition model. |\n  | 'recognition_02': | Recognition model released in 2019 March. |\n  | 'recognition_03': | Recognition model released in 2020 May. 'recognition_03' is recommended since its overall accuracy is improved compared with 'recognition_01' and 'recognition_02'. |",
-        "operationId": "Face_DetectWithStream",
-        "parameters": [
-          {
-            "name": "returnFaceId",
-            "in": "query",
-            "description": "A value indicating whether the operation should return faceIds of detected faces.",
-            "type": "boolean",
-            "default": true
-          },
-          {
-            "name": "returnFaceLandmarks",
-            "in": "query",
-            "description": "A value indicating whether the operation should return landmarks of the detected faces.",
-            "type": "boolean",
-            "default": false
-          },
-          {
-            "$ref": "#/parameters/returnFaceAttributes"
-          },
-          {
-            "name": "Image",
-            "in": "body",
-            "required": true,
-            "x-ms-parameter-location": "method",
-            "description": "An image stream.",
-            "schema": {
-              "type": "object",
-              "format": "file"
-            }
-          },
-          {
-            "$ref": "#/parameters/recognitionModel"
-          },
-          {
-            "$ref": "#/parameters/returnRecognitionModel"
-          },
-          {
-            "$ref": "#/parameters/detectionModel"
-          }
-        ],
-        "consumes": [
-          "application/octet-stream"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful call returns an array of face entries ranked by face rectangle size in descending order. An empty response indicates no faces detected.",
-            "schema": {
-              "$ref": "#/definitions/DetectedFaces"
-            }
-          },
-          "default": {
-            "description": "Error response.",
-            "schema": {
-              "$ref": "#/definitions/APIError"
-            }
-          }
-        },
-        "x-ms-examples": {
-          "Detect with stream example": {
-            "$ref": "./examples/DetectWithStream.json"
-          }
-        }
-      }
-    },
-    "/persongroups/{personGroupId}/persons/{personId}/persistedfaces?overload=stream": {
-      "post": {
-        "description": "Add a face to a person into a person group for face identification or verification. To deal with an image contains multiple faces, input face can be specified as an image with a targetFace rectangle. It returns a persistedFaceId representing the added face. No image will be stored. Only the extracted face feature will be stored on server until [PersonGroup PersonFace - Delete](https://docs.microsoft.com/rest/api/cognitiveservices/face/persongroupperson/deleteface), [PersonGroup Person - Delete](https://docs.microsoft.com/rest/api/cognitiveservices/face/persongroupperson/delete) or [PersonGroup - Delete](https://docs.microsoft.com/rest/api/cognitiveservices/face/persongroup/delete) is called.\n<br /> Note persistedFaceId is different from faceId generated by [Face - Detect](https://docs.microsoft.com/rest/api/cognitiveservices/face/face/detectwithurl).\n*   Higher face image quality means better recognition precision. Please consider high-quality faces: frontal, clear, and face size is 200x200 pixels (100 pixels between eyes) or bigger.\n*   Each person entry can hold up to 248 faces.\n*   JPEG, PNG, GIF (the first frame), and BMP format are supported. The allowed image file size is from 1KB to 6MB.\n*   \"targetFace\" rectangle should contain one face. Zero or multiple faces will be regarded as an error. If the provided \"targetFace\" rectangle is not returned from [Face - Detect](https://docs.microsoft.com/rest/api/cognitiveservices/face/face/detectwithurl), there’s no guarantee to detect and add the face successfully.\n*   Out of detectable face size (36x36 - 4096x4096 pixels), large head-pose, or large occlusions will cause failures.\n*   Adding/deleting faces to/from a same person will be processed sequentially. Adding/deleting faces to/from different persons are processed in parallel.\n* The minimum detectable face size is 36x36 pixels in an image no larger than 1920x1080 pixels. Images with dimensions higher than 1920x1080 pixels will need a proportionally larger minimum face size.\n* Different 'detectionModel' values can be provided. To use and compare different detection models, please refer to [How to specify a detection model](https://docs.microsoft.com/azure/cognitive-services/face/face-api-how-to-topics/specify-detection-model)\n  | Model | Recommended use-case(s) |\n  | ---------- | -------- |\n  | 'detection_01': | The default detection model for [PersonGroup Person - Add Face](https://docs.microsoft.com/rest/api/cognitiveservices/face/persongroupperson/addfacefromurl). Recommend for near frontal face detection. For scenarios with exceptionally large angle (head-pose) faces, occluded faces or wrong image orientation, the faces in such cases may not be detected. |\n  | 'detection_02': | Detection model released in 2019 May with improved accuracy especially on small, side and blurry faces. |",
-        "operationId": "PersonGroupPerson_AddFaceFromStream",
-        "parameters": [
-          {
-            "$ref": "#/parameters/personGroupId"
-          },
-          {
-            "$ref": "#/parameters/personId"
-          },
-          {
-            "$ref": "#/parameters/faceUserData"
-          },
-          {
-            "$ref": "#/parameters/targetFace"
-          },
-          {
-            "name": "Image",
-            "in": "body",
-            "required": true,
-            "x-ms-parameter-location": "method",
-            "description": "An image stream.",
-            "schema": {
-              "type": "object",
-              "format": "file"
-            }
-          },
-          {
-            "$ref": "#/parameters/detectionModel"
-          }
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "consumes": [
-          "application/octet-stream"
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful call returns the new persistedFaceId.",
-            "schema": {
-              "$ref": "#/definitions/PersistedFace"
-            }
-          },
-          "default": {
-            "description": "Error response.",
-            "schema": {
-              "$ref": "#/definitions/APIError"
-            }
-          }
-        },
-        "x-ms-examples": {
-          "Add face to person with stream example": {
-            "$ref": "./examples/AddPersonGroupPersonFaceFromStream.json"
-          }
-        }
-      }
-    },
-    "/facelists/{faceListId}/persistedfaces?overload=stream": {
-      "post": {
-        "description": "Add a face to a specified face list, up to 1,000 faces.\n<br /> To deal with an image contains multiple faces, input face can be specified as an image with a targetFace rectangle. It returns a persistedFaceId representing the added face. No image will be stored. Only the extracted face feature will be stored on server until [FaceList - Delete Face](https://docs.microsoft.com/rest/api/cognitiveservices/face/facelist/deleteface) or [FaceList - Delete](https://docs.microsoft.com/rest/api/cognitiveservices/face/facelist/delete) is called.\n<br /> Note persistedFaceId is different from faceId generated by [Face - Detect](https://docs.microsoft.com/rest/api/cognitiveservices/face/face/detectwithurl).\n* Higher face image quality means better detection and recognition precision. Please consider high-quality faces: frontal, clear, and face size is 200x200 pixels (100 pixels between eyes) or bigger.\n* JPEG, PNG, GIF (the first frame), and BMP format are supported. The allowed image file size is from 1KB to 6MB.\n* \"targetFace\" rectangle should contain one face. Zero or multiple faces will be regarded as an error. If the provided \"targetFace\" rectangle is not returned from [Face - Detect](https://docs.microsoft.com/rest/api/cognitiveservices/face/face/detectwithurl), there’s no guarantee to detect and add the face successfully.\n* Out of detectable face size (36x36 - 4096x4096 pixels), large head-pose, or large occlusions will cause failures.\n* Adding/deleting faces to/from a same face list are processed sequentially and to/from different face lists are in parallel.\n* The minimum detectable face size is 36x36 pixels in an image no larger than 1920x1080 pixels. Images with dimensions higher than 1920x1080 pixels will need a proportionally larger minimum face size.\n* Different 'detectionModel' values can be provided. To use and compare different detection models, please refer to [How to specify a detection model](https://docs.microsoft.com/azure/cognitive-services/face/face-api-how-to-topics/specify-detection-model)\n  | Model | Recommended use-case(s) |\n  | ---------- | -------- |\n  | 'detection_01': | The default detection model for [FaceList - Add Face](https://docs.microsoft.com/rest/api/cognitiveservices/face/facelist/addfacefromurl). Recommend for near frontal face detection. For scenarios with exceptionally large angle (head-pose) faces, occluded faces or wrong image orientation, the faces in such cases may not be detected. |\n  | 'detection_02': | Detection model released in 2019 May with improved accuracy especially on small, side and blurry faces. |",
-        "operationId": "FaceList_AddFaceFromStream",
-        "parameters": [
-          {
-            "$ref": "#/parameters/faceListId"
-          },
-          {
-            "$ref": "#/parameters/faceUserData"
-          },
-          {
-            "$ref": "#/parameters/targetFace"
-          },
-          {
-            "name": "Image",
-            "in": "body",
-            "required": true,
-            "x-ms-parameter-location": "method",
-            "description": "An image stream.",
-            "schema": {
-              "type": "object",
-              "format": "file"
-            }
-          },
-          {
-            "$ref": "#/parameters/detectionModel"
-          }
-        ],
-        "consumes": [
-          "application/octet-stream"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful call returns a new persistedFaceId.",
-            "schema": {
-              "$ref": "#/definitions/PersistedFace"
-            }
-          },
-          "default": {
-            "description": "Error response.",
-            "schema": {
-              "$ref": "#/definitions/APIError"
-            }
-          }
-        },
-        "x-ms-examples": {
-          "Add face to face list from stream example": {
-            "$ref": "./examples/AddFaceListFaceFromStream.json"
-          }
-        }
-      }
-    },
-    "/largepersongroups/{largePersonGroupId}/persons/{personId}/persistedfaces?overload=stream": {
-      "post": {
-        "description": "Add a face to a person into a large person group for face identification or verification. To deal with an image contains multiple faces, input face can be specified as an image with a targetFace rectangle. It returns a persistedFaceId representing the added face. No image will be stored. Only the extracted face feature will be stored on server until [LargePersonGroup PersonFace - Delete](https://docs.microsoft.com/rest/api/cognitiveservices/face/largepersongroupperson/deleteface), [LargePersonGroup Person - Delete](https://docs.microsoft.com/rest/api/cognitiveservices/face/largepersongroupperson/delete) or [LargePersonGroup - Delete](https://docs.microsoft.com/rest/api/cognitiveservices/face/largepersongroup/delete) is called.\n<br /> Note persistedFaceId is different from faceId generated by [Face - Detect](https://docs.microsoft.com/rest/api/cognitiveservices/face/face/detectwithurl).\n* Higher face image quality means better recognition precision. Please consider high-quality faces: frontal, clear, and face size is 200x200 pixels (100 pixels between eyes) or bigger.\n* Each person entry can hold up to 248 faces.\n* JPEG, PNG, GIF (the first frame), and BMP format are supported. The allowed image file size is from 1KB to 6MB.\n* \"targetFace\" rectangle should contain one face. Zero or multiple faces will be regarded as an error. If the provided \"targetFace\" rectangle is not returned from [Face - Detect](https://docs.microsoft.com/rest/api/cognitiveservices/face/face/detectwithurl), there’s no guarantee to detect and add the face successfully.\n* Out of detectable face size (36x36 - 4096x4096 pixels), large head-pose, or large occlusions will cause failures.\n* Adding/deleting faces to/from a same person will be processed sequentially. Adding/deleting faces to/from different persons are processed in parallel.\n* The minimum detectable face size is 36x36 pixels in an image no larger than 1920x1080 pixels. Images with dimensions higher than 1920x1080 pixels will need a proportionally larger minimum face size.\n* Different 'detectionModel' values can be provided. To use and compare different detection models, please refer to [How to specify a detection model](https://docs.microsoft.com/azure/cognitive-services/face/face-api-how-to-topics/specify-detection-model)\n  | Model | Recommended use-case(s) |\n  | ---------- | -------- |\n  | 'detection_01': | The default detection model for [LargePersonGroup Person - Add Face](https://docs.microsoft.com/rest/api/cognitiveservices/face/largepersongroupperson/addfacefromurl). Recommend for near frontal face detection. For scenarios with exceptionally large angle (head-pose) faces, occluded faces or wrong image orientation, the faces in such cases may not be detected. |\n  | 'detection_02': | Detection model released in 2019 May with improved accuracy especially on small, side and blurry faces. |",
-        "operationId": "LargePersonGroupPerson_AddFaceFromStream",
-        "parameters": [
-          {
-            "$ref": "#/parameters/largePersonGroupId"
-          },
-          {
-            "$ref": "#/parameters/personId"
-          },
-          {
-            "$ref": "#/parameters/faceUserData"
-          },
-          {
-            "$ref": "#/parameters/targetFace"
-          },
-          {
-            "name": "Image",
-            "in": "body",
-            "required": true,
-            "x-ms-parameter-location": "method",
-            "description": "An image stream.",
-            "schema": {
-              "type": "object",
-              "format": "file"
-            }
-          },
-          {
-            "$ref": "#/parameters/detectionModel"
-          }
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "consumes": [
-          "application/octet-stream"
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful call returns the new persistedFaceId.",
-            "schema": {
-              "$ref": "#/definitions/PersistedFace"
-            }
-          },
-          "default": {
-            "description": "Error response.",
-            "schema": {
-              "$ref": "#/definitions/APIError"
-            }
-          }
-        },
-        "x-ms-examples": {
-          "Add face to person with stream example": {
-            "$ref": "./examples/AddLargePersonGroupPersonFaceFromStream.json"
-          }
-        }
-      }
-    },
-    "/largefacelists/{largeFaceListId}/persistedfaces?overload=stream": {
-      "post": {
-        "description": "Add a face to a specified large face list, up to 1,000,000 faces.\n<br /> To deal with an image contains multiple faces, input face can be specified as an image with a targetFace rectangle. It returns a persistedFaceId representing the added face. No image will be stored. Only the extracted face feature will be stored on server until [LargeFaceList Face - Delete](https://docs.microsoft.com/rest/api/cognitiveservices/face/largefacelist/deleteface) or [LargeFaceList - Delete](https://docs.microsoft.com/rest/api/cognitiveservices/face/largefacelist/delete) is called.\n<br /> Note persistedFaceId is different from faceId generated by [Face - Detect](https://docs.microsoft.com/rest/api/cognitiveservices/face/face/detectwithurl).\n* Higher face image quality means better recognition precision. Please consider high-quality faces: frontal, clear, and face size is 200x200 pixels (100 pixels between eyes) or bigger.\n* JPEG, PNG, GIF (the first frame), and BMP format are supported. The allowed image file size is from 1KB to 6MB.\n* \"targetFace\" rectangle should contain one face. Zero or multiple faces will be regarded as an error. If the provided \"targetFace\" rectangle is not returned from [Face - Detect](https://docs.microsoft.com/rest/api/cognitiveservices/face/face/detectwithurl), there’s no guarantee to detect and add the face successfully.\n* Out of detectable face size (36x36 - 4096x4096 pixels), large head-pose, or large occlusions will cause failures.\n* Adding/deleting faces to/from a same face list are processed sequentially and to/from different face lists are in parallel.\n* The minimum detectable face size is 36x36 pixels in an image no larger than 1920x1080 pixels. Images with dimensions higher than 1920x1080 pixels will need a proportionally larger minimum face size.\n* Different 'detectionModel' values can be provided. To use and compare different detection models, please refer to [How to specify a detection model](https://docs.microsoft.com/azure/cognitive-services/face/face-api-how-to-topics/specify-detection-model)\n  | Model | Recommended use-case(s) |\n  | ---------- | -------- |\n  | 'detection_01': | The default detection model for [LargeFaceList - Add Face](https://docs.microsoft.com/rest/api/cognitiveservices/face/largefacelist/addfacefromurl). Recommend for near frontal face detection. For scenarios with exceptionally large angle (head-pose) faces, occluded faces or wrong image orientation, the faces in such cases may not be detected. |\n  | 'detection_02': | Detection model released in 2019 May with improved accuracy especially on small, side and blurry faces. |\n\nQuota:\n* Free-tier subscription quota: 1,000 faces per large face list.\n* S0-tier subscription quota: 1,000,000 faces per large face list.",
-        "operationId": "LargeFaceList_AddFaceFromStream",
-        "parameters": [
-          {
-            "$ref": "#/parameters/largeFaceListId"
-          },
-          {
-            "$ref": "#/parameters/faceUserData"
-          },
-          {
-            "$ref": "#/parameters/targetFace"
-          },
-          {
-            "name": "Image",
-            "in": "body",
-            "required": true,
-            "x-ms-parameter-location": "method",
-            "description": "An image stream.",
-            "schema": {
-              "type": "object",
-              "format": "file"
-            }
-          },
-          {
-            "$ref": "#/parameters/detectionModel"
-          }
-        ],
-        "consumes": [
-          "application/octet-stream"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful call returns a new persistedFaceId.",
-            "schema": {
-              "$ref": "#/definitions/PersistedFace"
-            }
-          },
-          "default": {
-            "description": "Error response.",
-            "schema": {
-              "$ref": "#/definitions/APIError"
-            }
-          }
-        },
-        "x-ms-examples": {
-          "Add face to large face list from stream example": {
-            "$ref": "./examples/AddLargeFaceListFaceFromStream.json"
-          }
-        }
-      }
-    }
-  },
   "definitions": {
     "APIError": {
       "type": "object",
@@ -4557,6 +4191,372 @@
         "detection_01",
         "detection_02"
       ]
+    }
+  },
+  "securityDefinitions": {
+    "apim_key": {
+      "type": "apiKey",
+      "name": "Ocp-Apim-Subscription-Key",
+      "in": "header"
+    }
+  },
+  "security": [
+    {
+      "apim_key": []
+    }
+  ],
+  "x-ms-parameterized-host": {
+    "hostTemplate": "{Endpoint}/face/v1.0",
+    "useSchemePrefix": false,
+    "parameters": [
+      {
+        "$ref": "#/parameters/Endpoint"
+      }
+    ]
+  },
+  "x-ms-paths": {
+    "/verify?overload=person": {
+      "post": {
+        "description": "Verify whether two faces belong to a same person. Compares a face Id with a Person Id",
+        "operationId": "Face_VerifyFaceToPerson",
+        "parameters": [
+          {
+            "name": "body",
+            "description": "Request body for face to person verification.",
+            "in": "body",
+            "required": true,
+            "x-ms-client-flatten": true,
+            "schema": {
+              "$ref": "#/definitions/VerifyFaceToPersonRequest"
+            }
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful call returns the verification result.",
+            "schema": {
+              "$ref": "#/definitions/VerifyResult"
+            }
+          },
+          "default": {
+            "description": "Error response.",
+            "schema": {
+              "$ref": "#/definitions/APIError"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Verify face to person example": {
+            "$ref": "./examples/VerifyFaceToPerson.json"
+          }
+        }
+      }
+    },
+    "/detect?overload=stream": {
+      "post": {
+        "description": "Detect human faces in an image, return face rectangles, and optionally with faceIds, landmarks, and attributes.<br />\n* No image will be stored. Only the extracted face feature will be stored on server. The faceId is an identifier of the face feature and will be used in [Face - Identify](https://docs.microsoft.com/rest/api/cognitiveservices/face/face/identify), [Face - Verify](https://docs.microsoft.com/rest/api/cognitiveservices/face/face/verifyfacetoface), and [Face - Find Similar](https://docs.microsoft.com/rest/api/cognitiveservices/face/face/findsimilar). The stored face feature(s) will expire and be deleted 24 hours after the original detection call.\n* Optional parameters include faceId, landmarks, and attributes. Attributes include age, gender, headPose, smile, facialHair, glasses, emotion, hair, makeup, occlusion, accessories, blur, exposure and noise. Some of the results returned for specific attributes may not be highly accurate.\n* JPEG, PNG, GIF (the first frame), and BMP format are supported. The allowed image file size is from 1KB to 6MB.\n* Up to 100 faces can be returned for an image. Faces are ranked by face rectangle size from large to small.\n* For optimal results when querying [Face - Identify](https://docs.microsoft.com/rest/api/cognitiveservices/face/face/identify), [Face - Verify](https://docs.microsoft.com/rest/api/cognitiveservices/face/face/verifyfacetoface), and [Face - Find Similar](https://docs.microsoft.com/rest/api/cognitiveservices/face/face/findsimilar) ('returnFaceId' is true), please use faces that are: frontal, clear, and with a minimum size of 200x200 pixels (100 pixels between eyes).\n* The minimum detectable face size is 36x36 pixels in an image no larger than 1920x1080 pixels. Images with dimensions higher than 1920x1080 pixels will need a proportionally larger minimum face size.\n* Different 'detectionModel' values can be provided. To use and compare different detection models, please refer to [How to specify a detection model](https://docs.microsoft.com/azure/cognitive-services/face/face-api-how-to-topics/specify-detection-model)\n  | Model | Recommended use-case(s) |\n  | ---------- | -------- |\n  | 'detection_01': | The default detection model for [Face - Detect](https://docs.microsoft.com/rest/api/cognitiveservices/face/face/detectwithurl). Recommend for near frontal face detection. For scenarios with exceptionally large angle (head-pose) faces, occluded faces or wrong image orientation, the faces in such cases may not be detected. |\n  | 'detection_02': | Detection model released in 2019 May with improved accuracy especially on small, side and blurry faces. |\n\n* Different 'recognitionModel' values are provided. If follow-up operations like Verify, Identify, Find Similar are needed, please specify the recognition model with 'recognitionModel' parameter. The default value for 'recognitionModel' is 'recognition_01', if latest model needed, please explicitly specify the model you need in this parameter. Once specified, the detected faceIds will be associated with the specified recognition model. More details, please refer to [How to specify a recognition model](https://docs.microsoft.com/azure/cognitive-services/face/face-api-how-to-topics/specify-recognition-model)\n  | Model | Recommended use-case(s) |\n  | ---------- | -------- |\n  | 'recognition_01': | The default recognition model for [Face - Detect](https://docs.microsoft.com/rest/api/cognitiveservices/face/face/detectwithurl). All those faceIds created before 2019 March are bonded with this recognition model. |\n  | 'recognition_02': | Recognition model released in 2019 March. 'recognition_02' is recommended since its overall accuracy is improved compared with 'recognition_01'. |",
+        "operationId": "Face_DetectWithStream",
+        "parameters": [
+          {
+            "name": "returnFaceId",
+            "in": "query",
+            "description": "A value indicating whether the operation should return faceIds of detected faces.",
+            "type": "boolean",
+            "default": true
+          },
+          {
+            "name": "returnFaceLandmarks",
+            "in": "query",
+            "description": "A value indicating whether the operation should return landmarks of the detected faces.",
+            "type": "boolean",
+            "default": false
+          },
+          {
+            "$ref": "#/parameters/returnFaceAttributes"
+          },
+          {
+            "name": "Image",
+            "in": "body",
+            "required": true,
+            "x-ms-parameter-location": "method",
+            "description": "An image stream.",
+            "schema": {
+              "type": "object",
+              "format": "file"
+            }
+          },
+          {
+            "$ref": "#/parameters/recognitionModel"
+          },
+          {
+            "$ref": "#/parameters/returnRecognitionModel"
+          },
+          {
+            "$ref": "#/parameters/detectionModel"
+          }
+        ],
+        "consumes": [
+          "application/octet-stream"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful call returns an array of face entries ranked by face rectangle size in descending order. An empty response indicates no faces detected.",
+            "schema": {
+              "$ref": "#/definitions/DetectedFaces"
+            }
+          },
+          "default": {
+            "description": "Error response.",
+            "schema": {
+              "$ref": "#/definitions/APIError"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Detect with stream example": {
+            "$ref": "./examples/DetectWithStream.json"
+          }
+        }
+      }
+    },
+    "/persongroups/{personGroupId}/persons/{personId}/persistedfaces?overload=stream": {
+      "post": {
+        "description": "Add a face to a person into a person group for face identification or verification. To deal with an image contains multiple faces, input face can be specified as an image with a targetFace rectangle. It returns a persistedFaceId representing the added face. No image will be stored. Only the extracted face feature will be stored on server until [PersonGroup PersonFace - Delete](https://docs.microsoft.com/rest/api/cognitiveservices/face/persongroupperson/deleteface), [PersonGroup Person - Delete](https://docs.microsoft.com/rest/api/cognitiveservices/face/persongroupperson/delete) or [PersonGroup - Delete](https://docs.microsoft.com/rest/api/cognitiveservices/face/persongroup/delete) is called.\n<br /> Note persistedFaceId is different from faceId generated by [Face - Detect](https://docs.microsoft.com/rest/api/cognitiveservices/face/face/detectwithurl).\n*   Higher face image quality means better recognition precision. Please consider high-quality faces: frontal, clear, and face size is 200x200 pixels (100 pixels between eyes) or bigger.\n*   Each person entry can hold up to 248 faces.\n*   JPEG, PNG, GIF (the first frame), and BMP format are supported. The allowed image file size is from 1KB to 6MB.\n*   \"targetFace\" rectangle should contain one face. Zero or multiple faces will be regarded as an error. If the provided \"targetFace\" rectangle is not returned from [Face - Detect](https://docs.microsoft.com/rest/api/cognitiveservices/face/face/detectwithurl), there’s no guarantee to detect and add the face successfully.\n*   Out of detectable face size (36x36 - 4096x4096 pixels), large head-pose, or large occlusions will cause failures.\n*   Adding/deleting faces to/from a same person will be processed sequentially. Adding/deleting faces to/from different persons are processed in parallel.\n* The minimum detectable face size is 36x36 pixels in an image no larger than 1920x1080 pixels. Images with dimensions higher than 1920x1080 pixels will need a proportionally larger minimum face size.\n* Different 'detectionModel' values can be provided. To use and compare different detection models, please refer to [How to specify a detection model](https://docs.microsoft.com/azure/cognitive-services/face/face-api-how-to-topics/specify-detection-model)\n  | Model | Recommended use-case(s) |\n  | ---------- | -------- |\n  | 'detection_01': | The default detection model for [PersonGroup Person - Add Face](https://docs.microsoft.com/rest/api/cognitiveservices/face/persongroupperson/addfacefromurl). Recommend for near frontal face detection. For scenarios with exceptionally large angle (head-pose) faces, occluded faces or wrong image orientation, the faces in such cases may not be detected. |\n  | 'detection_02': | Detection model released in 2019 May with improved accuracy especially on small, side and blurry faces. |",
+        "operationId": "PersonGroupPerson_AddFaceFromStream",
+        "parameters": [
+          {
+            "$ref": "#/parameters/personGroupId"
+          },
+          {
+            "$ref": "#/parameters/personId"
+          },
+          {
+            "$ref": "#/parameters/faceUserData"
+          },
+          {
+            "$ref": "#/parameters/targetFace"
+          },
+          {
+            "name": "Image",
+            "in": "body",
+            "required": true,
+            "x-ms-parameter-location": "method",
+            "description": "An image stream.",
+            "schema": {
+              "type": "object",
+              "format": "file"
+            }
+          },
+          {
+            "$ref": "#/parameters/detectionModel"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "application/octet-stream"
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful call returns the new persistedFaceId.",
+            "schema": {
+              "$ref": "#/definitions/PersistedFace"
+            }
+          },
+          "default": {
+            "description": "Error response.",
+            "schema": {
+              "$ref": "#/definitions/APIError"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Add face to person with stream example": {
+            "$ref": "./examples/AddPersonGroupPersonFaceFromStream.json"
+          }
+        }
+      }
+    },
+    "/facelists/{faceListId}/persistedfaces?overload=stream": {
+      "post": {
+        "description": "Add a face to a specified face list, up to 1,000 faces.\n<br /> To deal with an image contains multiple faces, input face can be specified as an image with a targetFace rectangle. It returns a persistedFaceId representing the added face. No image will be stored. Only the extracted face feature will be stored on server until [FaceList - Delete Face](https://docs.microsoft.com/rest/api/cognitiveservices/face/facelist/deleteface) or [FaceList - Delete](https://docs.microsoft.com/rest/api/cognitiveservices/face/facelist/delete) is called.\n<br /> Note persistedFaceId is different from faceId generated by [Face - Detect](https://docs.microsoft.com/rest/api/cognitiveservices/face/face/detectwithurl).\n* Higher face image quality means better detection and recognition precision. Please consider high-quality faces: frontal, clear, and face size is 200x200 pixels (100 pixels between eyes) or bigger.\n* JPEG, PNG, GIF (the first frame), and BMP format are supported. The allowed image file size is from 1KB to 6MB.\n* \"targetFace\" rectangle should contain one face. Zero or multiple faces will be regarded as an error. If the provided \"targetFace\" rectangle is not returned from [Face - Detect](https://docs.microsoft.com/rest/api/cognitiveservices/face/face/detectwithurl), there’s no guarantee to detect and add the face successfully.\n* Out of detectable face size (36x36 - 4096x4096 pixels), large head-pose, or large occlusions will cause failures.\n* Adding/deleting faces to/from a same face list are processed sequentially and to/from different face lists are in parallel.\n* The minimum detectable face size is 36x36 pixels in an image no larger than 1920x1080 pixels. Images with dimensions higher than 1920x1080 pixels will need a proportionally larger minimum face size.\n* Different 'detectionModel' values can be provided. To use and compare different detection models, please refer to [How to specify a detection model](https://docs.microsoft.com/azure/cognitive-services/face/face-api-how-to-topics/specify-detection-model)\n  | Model | Recommended use-case(s) |\n  | ---------- | -------- |\n  | 'detection_01': | The default detection model for [FaceList - Add Face](https://docs.microsoft.com/rest/api/cognitiveservices/face/facelist/addfacefromurl). Recommend for near frontal face detection. For scenarios with exceptionally large angle (head-pose) faces, occluded faces or wrong image orientation, the faces in such cases may not be detected. |\n  | 'detection_02': | Detection model released in 2019 May with improved accuracy especially on small, side and blurry faces. |",
+        "operationId": "FaceList_AddFaceFromStream",
+        "parameters": [
+          {
+            "$ref": "#/parameters/faceListId"
+          },
+          {
+            "$ref": "#/parameters/faceUserData"
+          },
+          {
+            "$ref": "#/parameters/targetFace"
+          },
+          {
+            "name": "Image",
+            "in": "body",
+            "required": true,
+            "x-ms-parameter-location": "method",
+            "description": "An image stream.",
+            "schema": {
+              "type": "object",
+              "format": "file"
+            }
+          },
+          {
+            "$ref": "#/parameters/detectionModel"
+          }
+        ],
+        "consumes": [
+          "application/octet-stream"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful call returns a new persistedFaceId.",
+            "schema": {
+              "$ref": "#/definitions/PersistedFace"
+            }
+          },
+          "default": {
+            "description": "Error response.",
+            "schema": {
+              "$ref": "#/definitions/APIError"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Add face to face list from stream example": {
+            "$ref": "./examples/AddFaceListFaceFromStream.json"
+          }
+        }
+      }
+    },
+    "/largepersongroups/{largePersonGroupId}/persons/{personId}/persistedfaces?overload=stream": {
+      "post": {
+        "description": "Add a face to a person into a large person group for face identification or verification. To deal with an image contains multiple faces, input face can be specified as an image with a targetFace rectangle. It returns a persistedFaceId representing the added face. No image will be stored. Only the extracted face feature will be stored on server until [LargePersonGroup PersonFace - Delete](https://docs.microsoft.com/rest/api/cognitiveservices/face/largepersongroupperson/deleteface), [LargePersonGroup Person - Delete](https://docs.microsoft.com/rest/api/cognitiveservices/face/largepersongroupperson/delete) or [LargePersonGroup - Delete](https://docs.microsoft.com/rest/api/cognitiveservices/face/largepersongroup/delete) is called.\n<br /> Note persistedFaceId is different from faceId generated by [Face - Detect](https://docs.microsoft.com/rest/api/cognitiveservices/face/face/detectwithurl).\n* Higher face image quality means better recognition precision. Please consider high-quality faces: frontal, clear, and face size is 200x200 pixels (100 pixels between eyes) or bigger.\n* Each person entry can hold up to 248 faces.\n* JPEG, PNG, GIF (the first frame), and BMP format are supported. The allowed image file size is from 1KB to 6MB.\n* \"targetFace\" rectangle should contain one face. Zero or multiple faces will be regarded as an error. If the provided \"targetFace\" rectangle is not returned from [Face - Detect](https://docs.microsoft.com/rest/api/cognitiveservices/face/face/detectwithurl), there’s no guarantee to detect and add the face successfully.\n* Out of detectable face size (36x36 - 4096x4096 pixels), large head-pose, or large occlusions will cause failures.\n* Adding/deleting faces to/from a same person will be processed sequentially. Adding/deleting faces to/from different persons are processed in parallel.\n* The minimum detectable face size is 36x36 pixels in an image no larger than 1920x1080 pixels. Images with dimensions higher than 1920x1080 pixels will need a proportionally larger minimum face size.\n* Different 'detectionModel' values can be provided. To use and compare different detection models, please refer to [How to specify a detection model](https://docs.microsoft.com/azure/cognitive-services/face/face-api-how-to-topics/specify-detection-model)\n  | Model | Recommended use-case(s) |\n  | ---------- | -------- |\n  | 'detection_01': | The default detection model for [LargePersonGroup Person - Add Face](https://docs.microsoft.com/rest/api/cognitiveservices/face/largepersongroupperson/addfacefromurl). Recommend for near frontal face detection. For scenarios with exceptionally large angle (head-pose) faces, occluded faces or wrong image orientation, the faces in such cases may not be detected. |\n  | 'detection_02': | Detection model released in 2019 May with improved accuracy especially on small, side and blurry faces. |",
+        "operationId": "LargePersonGroupPerson_AddFaceFromStream",
+        "parameters": [
+          {
+            "$ref": "#/parameters/largePersonGroupId"
+          },
+          {
+            "$ref": "#/parameters/personId"
+          },
+          {
+            "$ref": "#/parameters/faceUserData"
+          },
+          {
+            "$ref": "#/parameters/targetFace"
+          },
+          {
+            "name": "Image",
+            "in": "body",
+            "required": true,
+            "x-ms-parameter-location": "method",
+            "description": "An image stream.",
+            "schema": {
+              "type": "object",
+              "format": "file"
+            }
+          },
+          {
+            "$ref": "#/parameters/detectionModel"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "application/octet-stream"
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful call returns the new persistedFaceId.",
+            "schema": {
+              "$ref": "#/definitions/PersistedFace"
+            }
+          },
+          "default": {
+            "description": "Error response.",
+            "schema": {
+              "$ref": "#/definitions/APIError"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Add face to person with stream example": {
+            "$ref": "./examples/AddLargePersonGroupPersonFaceFromStream.json"
+          }
+        }
+      }
+    },
+    "/largefacelists/{largeFaceListId}/persistedfaces?overload=stream": {
+      "post": {
+        "description": "Add a face to a specified large face list, up to 1,000,000 faces.\n<br /> To deal with an image contains multiple faces, input face can be specified as an image with a targetFace rectangle. It returns a persistedFaceId representing the added face. No image will be stored. Only the extracted face feature will be stored on server until [LargeFaceList Face - Delete](https://docs.microsoft.com/rest/api/cognitiveservices/face/largefacelist/deleteface) or [LargeFaceList - Delete](https://docs.microsoft.com/rest/api/cognitiveservices/face/largefacelist/delete) is called.\n<br /> Note persistedFaceId is different from faceId generated by [Face - Detect](https://docs.microsoft.com/rest/api/cognitiveservices/face/face/detectwithurl).\n* Higher face image quality means better recognition precision. Please consider high-quality faces: frontal, clear, and face size is 200x200 pixels (100 pixels between eyes) or bigger.\n* JPEG, PNG, GIF (the first frame), and BMP format are supported. The allowed image file size is from 1KB to 6MB.\n* \"targetFace\" rectangle should contain one face. Zero or multiple faces will be regarded as an error. If the provided \"targetFace\" rectangle is not returned from [Face - Detect](https://docs.microsoft.com/rest/api/cognitiveservices/face/face/detectwithurl), there’s no guarantee to detect and add the face successfully.\n* Out of detectable face size (36x36 - 4096x4096 pixels), large head-pose, or large occlusions will cause failures.\n* Adding/deleting faces to/from a same face list are processed sequentially and to/from different face lists are in parallel.\n* The minimum detectable face size is 36x36 pixels in an image no larger than 1920x1080 pixels. Images with dimensions higher than 1920x1080 pixels will need a proportionally larger minimum face size.\n* Different 'detectionModel' values can be provided. To use and compare different detection models, please refer to [How to specify a detection model](https://docs.microsoft.com/azure/cognitive-services/face/face-api-how-to-topics/specify-detection-model)\n  | Model | Recommended use-case(s) |\n  | ---------- | -------- |\n  | 'detection_01': | The default detection model for [LargeFaceList - Add Face](https://docs.microsoft.com/rest/api/cognitiveservices/face/largefacelist/addfacefromurl). Recommend for near frontal face detection. For scenarios with exceptionally large angle (head-pose) faces, occluded faces or wrong image orientation, the faces in such cases may not be detected. |\n  | 'detection_02': | Detection model released in 2019 May with improved accuracy especially on small, side and blurry faces. |\n\nQuota:\n* Free-tier subscription quota: 1,000 faces per large face list.\n* S0-tier subscription quota: 1,000,000 faces per large face list.",
+        "operationId": "LargeFaceList_AddFaceFromStream",
+        "parameters": [
+          {
+            "$ref": "#/parameters/largeFaceListId"
+          },
+          {
+            "$ref": "#/parameters/faceUserData"
+          },
+          {
+            "$ref": "#/parameters/targetFace"
+          },
+          {
+            "name": "Image",
+            "in": "body",
+            "required": true,
+            "x-ms-parameter-location": "method",
+            "description": "An image stream.",
+            "schema": {
+              "type": "object",
+              "format": "file"
+            }
+          },
+          {
+            "$ref": "#/parameters/detectionModel"
+          }
+        ],
+        "consumes": [
+          "application/octet-stream"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful call returns a new persistedFaceId.",
+            "schema": {
+              "$ref": "#/definitions/PersistedFace"
+            }
+          },
+          "default": {
+            "description": "Error response.",
+            "schema": {
+              "$ref": "#/definitions/APIError"
+            }
+          }
+        },
+        "x-ms-examples": {
+          "Add face to large face list from stream example": {
+            "$ref": "./examples/AddLargeFaceListFaceFromStream.json"
+          }
+        }
+      }
     }
   }
 }
